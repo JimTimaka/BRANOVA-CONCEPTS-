@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Branova Concepts | Source • Brand • Supply</title>
+<meta name="description" content="Branova Concepts - professional printing, branding, promotional products and corporate supplies in Uganda.">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <div>Professional Printing • Branding • Supply</div>
+    <div class="top-links"><span>📞 0752 357 618 / 0771 576 307</span><span>✉ branovaconcepts@outlook.com</span></div>
+  </div>
+</div>
+
+<header>
+  <div class="container nav">
+    <a href="#home" class="brand">
+      <img class="logo" src="assets/images/branova-logo.png" alt="Branova Concepts logo">
+      <div>
+        <div class="brand-name">Branova Concepts</div>
+        <div class="brand-tag">Source • Brand • Supply</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#shop">Shop</a>
+      <a href="#services">Services</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="icon-btn mobile-menu" onclick="toggleMobile()">☰</button>
+      <button class="icon-btn" onclick="document.getElementById('shop').scrollIntoView()">⌕</button>
+      <button class="icon-btn" onclick="openCart()">🛒<span class="cart-count" id="cartCount">0</span></button>
+    </div>
+  </div>
+</header>
+
+<main id="home">
+<section class="hero">
+
+  <div class="product-rail left" data-rail="left" aria-label="Featured products">
+    <div class="rail-card active"><div class="rail-visual rail-a"><div class="rail-emoji">🪧</div></div><div class="rail-info"><small>Branding</small><strong>Pull-Up Banners</strong><span>Bright, portable displays</span></div></div>
+    <div class="rail-card"><div class="rail-visual rail-b"><div class="rail-emoji">👕</div></div><div class="rail-info"><small>Promotional</small><strong>Branded T-Shirts</strong><span>Custom colour & print</span></div></div>
+    <div class="rail-card"><div class="rail-visual rail-c"><div class="rail-emoji">☕</div></div><div class="rail-info"><small>Corporate Gifts</small><strong>Custom Mugs</strong><span>Great for teams & events</span></div></div>
+    <div class="rail-dots"><i class="rail-dot active"></i><i class="rail-dot"></i><i class="rail-dot"></i></div>
+  </div>
+  <div class="product-rail right" data-rail="right" aria-label="Featured products">
+    <div class="rail-card active"><div class="rail-visual rail-d"><div class="rail-emoji">🎪</div></div><div class="rail-info"><small>Events</small><strong>Event Backdrops</strong><span>Make your brand stand out</span></div></div>
+    <div class="rail-card"><div class="rail-visual rail-e"><div class="rail-emoji">📓</div></div><div class="rail-info"><small>Stationery</small><strong>Branded Notebooks</strong><span>Professional & practical</span></div></div>
+    <div class="rail-card"><div class="rail-visual rail-f"><div class="rail-emoji">🛍️</div></div><div class="rail-info"><small>Packaging</small><strong>Custom Gift Bags</strong><span>Premium branded packaging</span></div></div>
+    <div class="rail-dots"><i class="rail-dot active"></i><i class="rail-dot"></i><i class="rail-dot"></i></div>
+  </div>
+
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">Branova Concepts Uganda Ltd</div>
+      <h1>Source.<br><span>Brand.</span><br>Supply.</h1>
+      <p>Everything your business needs to look professional — from printing and corporate branding to promotional products and supplies.</p>
+      <div class="hero-buttons">
+        <a class="btn btn-secondary" href="#shop">Shop Products →</a>
+        <button class="btn btn-outline" onclick="openQuote()">Request a Quote</button>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="hero-circle"></div>
+      <img class="hero-logo" src="assets/images/branova-logo.png" alt="Branova Concepts">
+      <div class="floating-card fc1">🖨️ Professional Printing</div>
+      <div class="floating-card fc2">✨ Custom Branding</div>
+    </div>
+  </div>
+</section>
+
+<div class="search-strip">
+  <div class="container search-box">
+    <input id="searchInput" class="search-input" type="search" placeholder="Search products e.g. business cards, pens, banners..." oninput="filterProducts()">
+    <button class="btn btn-primary search-button" onclick="filterProducts()">Search</button>
+  </div>
+</div>
+
+<section id="shop">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>Shop by Category</h2>
+        <p>Explore our most requested printing, branding and corporate supply solutions.</p>
+      </div>
+    </div>
+
+    <div class="categories">
+      <div class="category" onclick="showCategory('Printing')"><div class="category-icon">🖨️</div><h3>Printing</h3></div>
+      <div class="category" onclick="showCategory('Branding')"><div class="category-icon">🏷️</div><h3>Branding</h3></div>
+      <div class="category" onclick="showCategory('Stationery')"><div class="category-icon">📒</div><h3>Stationery</h3></div>
+      <div class="category" onclick="showCategory('Promotional')"><div class="category-icon">🎁</div><h3>Promotional</h3></div>
+      <div class="category" onclick="showCategory('Packaging')"><div class="category-icon">📦</div><h3>Packaging</h3></div>
+      <div class="category" onclick="openQuote()"><div class="category-icon">💬</div><h3>Custom Order</h3></div>
+    </div>
+
+    <div class="section-head" style="margin-top:65px">
+      <div>
+        <h2>Popular Products</h2>
+        <p>Start with one of our popular products or request a custom specification.</p>
+      </div>
+      <a href="#shop" class="view-all">View all →</a>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</section>
+
+<section id="services" class="services">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>What We Do</h2>
+        <p>From concept to finished product, Branova helps organisations build a consistent and professional brand.</p>
+      </div>
+    </div>
+    <div class="service-grid">
+      <div class="service"><div class="service-icon">🖨️</div><h3>Digital & Offset Printing</h3><p>Business cards, brochures, flyers, books, magazines, reports and more.</p></div>
+      <div class="service"><div class="service-icon">🏢</div><h3>Corporate Branding</h3><p>Office branding, signage, vehicle branding, banners and branded environments.</p></div>
+      <div class="service"><div class="service-icon">🎁</div><h3>Promotional Products</h3><p>Branded pens, notebooks, T-shirts, mugs, bags and corporate gifts.</p></div>
+      <div class="service"><div class="service-icon">📦</div><h3>Packaging & Labels</h3><p>Custom labels, stickers, packaging materials and product presentation.</p></div>
+      <div class="service"><div class="service-icon">🎨</div><h3>Graphic Design</h3><p>Creative artwork, layouts, brand materials and production-ready designs.</p></div>
+      <div class="service"><div class="service-icon">📋</div><h3>Stationery Supply</h3><p>Office stationery, forms, folders, envelopes, books and organisational supplies.</p></div>
+      <div class="service"><div class="service-icon">🚚</div><h3>Supply & Delivery</h3><p>We coordinate production and delivery for projects of different sizes.</p></div>
+      <div class="service"><div class="service-icon">💡</div><h3>Custom Solutions</h3><p>Tell us what you need and our team will recommend the right specification.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>How It Works</h2>
+        <p>A simple process from your idea to the finished product.</p>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-number">1</div><h3>Choose</h3><p>Browse products or tell us what you need.</p></div>
+      <div class="step"><div class="step-number">2</div><h3>Customize</h3><p>Choose quantities, materials, sizes and finishing.</p></div>
+      <div class="step"><div class="step-number">3</div><h3>Approve</h3><p>We confirm the quotation and artwork before production.</p></div>
+      <div class="step"><div class="step-number">4</div><h3>Receive</h3><p>Your finished order is ready for collection or delivery.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="portfolio" class="portfolio">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>Our Work</h2>
+        <p>Replace these placeholders with photographs of Branova's actual printing and branding projects.</p>
+      </div>
+    </div>
+    <div class="portfolio-grid">
+      <div class="portfolio-item"><div>Corporate Branding</div></div>
+      <div class="portfolio-item"><div>Print & Publications</div></div>
+      <div class="portfolio-item"><div>Promotional Products</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="cta">
+  <div class="container">
+    <div class="cta-box">
+      <div>
+        <h2>Have a project in mind?</h2>
+        <p>Send us your specifications and let Branova prepare a quotation for you.</p>
+      </div>
+      <button class="btn btn-secondary" onclick="openQuote()">Request a Quote →</button>
+    </div>
+  </div>
+</div>
+
+<section id="about">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>About Branova Concepts</h2>
+        <p>Branova Concepts Uganda Ltd provides printing, branding and supply solutions for businesses, organisations, institutions and events. Our goal is simple: help clients source quality products, build strong brands and get reliable supplies.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h2>Branova <span>Concepts</span></h2>
+        <p style="margin-top:10px;max-width:300px">Source • Brand • Supply</p>
+        <p style="margin-top:12px;font-size:13px;color:#b8d0d1">Professional printing, branding, promotional products and corporate supplies in Uganda.</p>
+      </div>
+      <div class="footer-col"><h3>Shop</h3><a href="#shop">Printing</a><a href="#shop">Branding</a><a href="#shop">Stationery</a><a href="#shop">Promotional Products</a></div>
+      <div class="footer-col"><h3>Services</h3><a href="#services">Printing</a><a href="#services">Corporate Branding</a><a href="#services">Graphic Design</a><a href="#services">Packaging</a></div>
+      <div class="footer-col"><h3>Contact</h3><a href="tel:+256752357618">0752 357 618 / 0771 576 307</a><a href="mailto:branovaconcepts@outlook.com">branovaconcepts@outlook.com</a><a href="#" onclick="openQuote();return false">Request a Quote</a><a href="#">Kampala, Uganda</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Branova Concepts Uganda Ltd. All rights reserved.</span><span>Source • Brand • Supply</span></div>
+  </div>
+</footer>
+
+<!-- QUOTE MODAL -->
+<div class="modal" id="quoteModal">
+  <div class="modal-card">
+    <button class="close" onclick="closeQuote()">×</button>
+    <h2>Request a Quote</h2>
+    <p style="color:var(--muted)">Tell us what you need and we'll get back to you.</p>
+    <form onsubmit="submitQuote(event)">
+      <div class="form-grid">
+        <div class="form-group"><label>Your Name</label><input required id="qName" placeholder="Full name"></div>
+        <div class="form-group"><label>Phone</label><input required id="qPhone" placeholder="+256..."></div>
+        <div class="form-group"><label>Email</label><input type="email" id="qEmail" placeholder="you@example.com"></div>
+        <div class="form-group"><label>Product / Service</label><select id="qProduct"><option>Printing</option><option>Corporate Branding</option><option>Promotional Products</option><option>Packaging</option><option>Stationery</option><option>Graphic Design</option><option>Other</option></select></div>
+        <div class="form-group"><label>Quantity</label><input id="qQty" placeholder="e.g. 500"></div>
+        <div class="form-group"><label>Deadline</label><input id="qDeadline" type="date"></div>
+        <div class="form-group full"><label>Specifications</label><textarea id="qDetails" placeholder="Size, paper/material, colours, finishing, delivery location, etc."></textarea></div>
+        <div class="form-group full"><button class="btn btn-primary" type="submit">Send Quote Request</button></div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<aside class="cart-panel" id="cartPanel">
+  <div class="cart-header"><h2>Your Cart</h2><button class="close" onclick="closeCart()">×</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-total"><span>Total</span><span id="cartTotal">UGX 0</span></div>
+  <button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="checkout()">Proceed to Order</button>
+</aside>
+
+
+
+<a class="whatsapp-float" href="https://wa.me/256752357618?text=Hello%20Branova%20Concepts%2C%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" rel="noopener" aria-label="Chat with Branova Concepts on WhatsApp"><span>💬</span><strong>WhatsApp</strong></a>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
