@@ -1,18 +1,26 @@
 package com.branova.model;
 
-public class BrandedProduct extends Product {
-    private double brandingCost;
+import jakarta.persistence.*;
+import java.math.BigDecimal;
 
-    public BrandedProduct(Long id, String name, String category, double basePrice, double brandingCost) {
-        super(id, name, category, basePrice);
+@Entity
+@DiscriminatorValue("BRANDED")
+public class BrandedProduct extends Product {
+    @Column(precision = 15, scale = 2)
+    private BigDecimal brandingCost = BigDecimal.ZERO;
+
+    protected BrandedProduct() {}
+
+    public BrandedProduct(String name, String category, BigDecimal basePrice, BigDecimal brandingCost) {
+        super(name, category, basePrice);
         this.brandingCost = brandingCost;
     }
 
-    public double getBrandingCost() { return brandingCost; }
-    public void setBrandingCost(double brandingCost) { this.brandingCost = brandingCost; }
+    public BigDecimal getBrandingCost() { return brandingCost; }
+    public void setBrandingCost(BigDecimal brandingCost) { this.brandingCost = brandingCost; }
 
     @Override
-    public double calculateUnitPrice() {
-        return getBasePrice() + brandingCost;
+    public BigDecimal calculateUnitPrice() {
+        return getBasePrice().add(brandingCost == null ? BigDecimal.ZERO : brandingCost);
     }
 }
