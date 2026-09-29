@@ -48,3 +48,23 @@ The initial quotation tests demonstrate polymorphic pricing for branded products
 Database persistence (MySQL), quotation/order repositories, admin authentication and frontend API integration can be added without changing the core frontend architecture.
 
 GitHub Pages hosts the frontend only. This Java application requires a Java-compatible backend host.
+
+
+## MySQL persistence
+
+The backend now uses Spring Data JPA with MySQL.
+
+1. Install/start MySQL.
+2. Run `database/setup.sql` as a MySQL administrator.
+3. Change the example database password.
+4. Set `DB_URL`, `DB_USERNAME` and `DB_PASSWORD` in your environment.
+5. Run `mvn spring-boot:run`.
+
+Hibernate currently uses `ddl-auto=update` for development, so it creates/updates the entity tables automatically. For production, schema migrations (Flyway) should replace automatic schema changes.
+
+Current persistent entities:
+- Customer
+- Product (BrandedProduct / GeneralSupply inheritance)
+- Enquiry
+- Quotation
+- QuotationItem
