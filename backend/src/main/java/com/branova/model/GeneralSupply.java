@@ -1,12 +1,19 @@
 package com.branova.model;
 
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+@Entity
+@DiscriminatorValue("GENERAL")
 public class GeneralSupply extends Product {
-    public GeneralSupply(Long id, String name, String category, double basePrice) {
-        super(id, name, category, basePrice);
+    protected GeneralSupply() {}
+
+    public GeneralSupply(String name, String category, BigDecimal basePrice) {
+        super(name, category, basePrice);
     }
 
     @Override
-    public double calculateUnitPrice() {
+    public BigDecimal calculateUnitPrice() {
         return getBasePrice();
     }
 }
