@@ -2,9 +2,7 @@
 
 ## Frontend
 
-The frontend is the part visitors see and use in their browser.
-
-For the current GitHub Pages deployment it remains at the repository root:
+The customer-facing frontend remains at the repository root for the current GitHub Pages deployment:
 
 ```
 index.html
@@ -14,32 +12,48 @@ assets/
   images/
 ```
 
-The `frontend/` directory contains frontend-specific documentation and is the target location for a future deployment migration.
+The `frontend/` directory documents the frontend boundary. Keeping `index.html` at root prevents disruption to the existing GitHub Pages site.
 
-## Backend
+## Backend — Java / Spring Boot
 
-The backend is now isolated under:
+Server-side code is isolated under:
 
 ```
 backend/
-  package.json
-  .env.example
-  src/
-    server.js
+  pom.xml
+  src/main/java/com/branova/
+    BranovaApplication.java
+    controller/
+    model/
+    service/
+  src/main/resources/
+  src/test/
 ```
 
-It provides the starting API layer for enquiries, quotations, products, orders and future admin/database features.
+The backend uses OOP for Branova business concepts. An abstract `Product` class is extended by `BrandedProduct` and `GeneralSupply`; quotations work against the common Product abstraction.
+
+## Communication
+
+```
+Browser
+  ↓
+HTML / CSS / JavaScript frontend
+  ↓ REST/JSON
+Java Spring Boot API
+  ↓
+Business logic / services
+  ↓
+Database (next stage)
+```
 
 ## Deployment
 
-GitHub Pages hosts static files only, so the live website continues to use the root frontend.
-
-The backend must be deployed separately to a service capable of running Node.js. Once deployed, the frontend can call it through an API URL.
+GitHub Pages hosts static frontend files only. The Java backend will be deployed separately to a Java-compatible service, and the frontend will call its public API URL.
 
 ## Development model
 
-- `main`: stable/live website.
-- feature branches: development and testing.
-- merge to `main` only after changes are checked.
+- `main`: stable/live website
+- feature branches: development/testing
+- pull requests: review before merging major changes
 
-This structure separates browser code from server-side code without disrupting the existing Branova website.
+This keeps the live site stable while allowing the backend to grow independently.
