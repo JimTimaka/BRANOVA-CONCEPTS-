@@ -2,6 +2,7 @@ package com.branova.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,13 +11,22 @@ public class Enquiry {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank @Column(nullable = false)
+    @NotBlank
+    @Size(max = 120)
+    @Column(nullable = false, length = 120)
     private String name;
 
+    @Size(max = 40)
+    @Column(length = 40)
     private String phone;
+
+    @Size(max = 160)
+    @Column(length = 160)
     private String email;
 
-    @NotBlank @Column(nullable = false, length = 2000)
+    @NotBlank
+    @Size(max = 2000)
+    @Column(nullable = false, length = 2000)
     private String message;
 
     @Column(nullable = false, updatable = false)
