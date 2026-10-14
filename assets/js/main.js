@@ -211,5 +211,27 @@ $("quoteModal").addEventListener("click", event => { if (event.target === $("quo
 $("quoteForm").addEventListener("submit", submitEnquiry);
 $("sendWhatsApp").addEventListener("click", sendWhatsApp);
 document.addEventListener("keydown", event => { if (event.key === "Escape") { closeQuote(); closeBasket(); } });
+async function syncCatalogFromApi() {
+  if (!API_BASE_URL) return;
+  try {
+    const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/catalog`);
+    if (!response.ok) throw new Error("Catalogue API unavailable");
+    const remoteProducts = await response.json();
+    remoteProducts.forEach(remote => {
+      const local = products.find(product => product.id === remote.id);
+      if (local) {
+        local.name = remote.name || local.name;
+        local.category = remote.category || local.category;
+        local.description = remote.description || local.description;
+        local.image = remote.image || local.image;
+        local.price = remote.price || local.price;
+      }
+    });
+    renderProducts();
+  } catch (error) {
+    console.warn("Using the built-in Branova catalogue because the API is unavailable.", error);
+  }
+}
 renderProducts();
 renderBasket();
+syncCatalogFromApi();
