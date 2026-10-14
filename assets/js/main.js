@@ -153,7 +153,7 @@ async function submitEnquiry(event) {
   feedback.textContent = "";
   try {
     if (API_BASE_URL) {
-      const response = await fetch(`${API_BASE_URL.replace(/\\/$/, "")}/api/enquiries`, {
+      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/enquiries`, {
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({name:payload.name,phone:payload.phone,email:payload.email,message:payload.message})
