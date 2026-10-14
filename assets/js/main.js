@@ -151,9 +151,9 @@ async function submitEnquiry(event) {
   submitButton.disabled = true;
   submitButton.textContent = "Sending…";
   feedback.textContent = "";
-  if (API_BASE_URL) {
-    try {
-      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/enquiries`, {
+  try {
+    if (API_BASE_URL) {
+      const response = await fetch(`${API_BASE_URL.replace(/\\/$/, "")}/api/enquiries`, {
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({name:payload.name,phone:payload.phone,email:payload.email,message:payload.message})
@@ -163,15 +163,18 @@ async function submitEnquiry(event) {
       $("quoteForm").reset();
       basket = [];
       renderBasket();
-    } catch (error) {
-      feedback.textContent = "The online service is unavailable right now. Choose “Send with WhatsApp” to send this enquiry instead.";
+    } else {
+      window.open(whatsappUrl(payload), "_blank", "noopener,noreferrer");
+      feedback.textContent = "WhatsApp opened with your enquiry. Please send the prepared message to complete your request.";
     }
-  } else {
-    window.open(whatsappUrl(payload), "_blank", "noopener,noreferrer");
-    feedback.textContent = "WhatsApp opened with your enquiry. Please send the prepared message to complete your request.";
+  } catch (error) {
+    feedback.textContent = API_BASE_URL
+      ? "The online service is unavailable right now. Choose “Send with WhatsApp” to send this enquiry instead."
+      : "We could not open WhatsApp automatically. Please use the WhatsApp contact link on the page.";
+  } finally {
+    submitButton.disabled = false;
+    submitButton.innerHTML = 'Send enquiry <span>↗</span>';
   }
-  submitButton.disabled = false;
-  submitButton.innerHTML = 'Send enquiry <span>↗</span>';
 }
 function toggleMenu() {
   const open = $("mainNav").classList.toggle("open");
