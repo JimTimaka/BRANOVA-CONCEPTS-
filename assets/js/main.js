@@ -164,8 +164,7 @@ async function submitEnquiry(event) {
       basket = [];
       renderBasket();
     } catch (error) {
-      feedback.textContent = "The online service is unavailable right now. WhatsApp is ready as an alternative.";
-      window.open(whatsappUrl(payload), "_blank", "noopener,noreferrer");
+      feedback.textContent = "The online service is unavailable right now. Choose “Send with WhatsApp” to send this enquiry instead.";
     }
   } else {
     window.open(whatsappUrl(payload), "_blank", "noopener,noreferrer");
