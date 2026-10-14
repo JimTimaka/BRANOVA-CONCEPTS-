@@ -16,8 +16,8 @@ This is the server-side application for Branova Concepts Uganda Ltd. The storefr
 1. Install Java 17+ and Maven.
 2. Start MySQL and create the database using `database/setup.sql`.
 3. In a terminal, enter the `backend/` directory.
-4. Set `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` and `FRONTEND_URL` as environment variables. Use a private password, not the example credentials.
-5. Run `mvn spring-boot:run`.
+4. Set `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` and `FRONTEND_URL` as environment variables. The application no longer supplies a fallback database password. Use a private password.
+5. For local development only, `DDL_AUTO=update` can create/update tables. Run `mvn spring-boot:run`.
 6. The API starts at `http://localhost:8080`.
 
 For local frontend development, the default allowed origin is `http://localhost:5500`. When deployed, set `FRONTEND_URL` to the exact public frontend origin, for example `https://jimtimaka.github.io`. If the frontend is hosted under a GitHub Pages project path, the origin does not include the path.
@@ -40,6 +40,8 @@ Example enquiry body:
 }
 ```
 
+The server requires a non-empty name, phone number and message. Email is optional, but if provided must be a valid email address.
+
 The frontend catalogue is usable without the backend. When the backend is deployed, define `window.BRANOVA_API_URL` before `assets/js/main.js` loads, using the base URL of the deployed API. The frontend then syncs catalogue metadata from `GET /api/catalog` and sends enquiry submissions to `POST /api/enquiries`. If the API is not configured or is unavailable, the enquiry form prepares a WhatsApp message as a fallback.
 
 For example, add this script immediately before the main JavaScript file in `index.html`, replacing the placeholder with the real deployed API URL:
@@ -61,9 +63,19 @@ Do not place database credentials or private API keys in frontend files.
 
 This structure demonstrates encapsulation, abstraction, inheritance and polymorphism in a real Branova use case.
 
-## MySQL and deployment notes
+## Production readiness checklist
 
-Hibernate currently uses `ddl-auto=update` for development. Before production, use managed database credentials, HTTPS, schema migrations such as Flyway, backups and suitable database permissions. GitHub Pages hosts static frontend files only. The Java API and MySQL database must be hosted separately on services that support them.
+Before launch:
+
+- Set strong database credentials through the hosting provider's secret/environment settings.
+- Set `FRONTEND_URL` to the exact deployed frontend origin.
+- Set `DDL_AUTO=validate` after creating the schema with a reviewed migration. Do not rely on Hibernate schema updates for production.
+- Use HTTPS, least-privilege database access, backups, and a migration tool such as Flyway.
+- Add request rate limiting and spam protection to the public enquiry endpoint.
+- Configure operational notifications and a secure internal process for reviewing and responding to enquiries.
+- Test real database persistence, invalid submissions, CORS, and the WhatsApp fallback before accepting live customer requests.
+
+GitHub Pages hosts static frontend files only. The Java API and MySQL database must be hosted separately on services that support them.
 
 ## Tests
 
