@@ -1,6 +1,7 @@
 package com.branova.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -16,10 +17,12 @@ public class Enquiry {
     @Column(nullable = false, length = 120)
     private String name;
 
+    @NotBlank
     @Size(max = 40)
-    @Column(length = 40)
+    @Column(nullable = false, length = 40)
     private String phone;
 
+    @Email
     @Size(max = 160)
     @Column(length = 160)
     private String email;
