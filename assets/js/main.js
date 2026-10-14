@@ -1,103 +1,215 @@
+/* Branova storefront behaviour.
+   Set window.BRANOVA_API_URL to the deployed Spring Boot base URL before this file loads
+   to enable persistent API enquiries. Without it, enquiries can be sent to WhatsApp. */
+const API_BASE_URL = window.BRANOVA_API_URL || "";
+const WHATSAPP_NUMBER = "256752357618";
 const products = [
-  {name:"Business Cards",category:"Printing",price:"From UGX 25,000",image:"assets/images/products/business-cards.jpg"},
-  {name:"Flyers & Brochures",category:"Printing",price:"From UGX 50,000",image:"assets/images/products/flyers-brochures.jpg"},
-  {name:"Notebooks & Diaries",category:"Stationery",price:"From UGX 8,000",image:"assets/images/products/notebooks-diaries.jpg"},
-  {name:"Branded Pens",category:"Promotional",price:"From UGX 1,500",image:"assets/images/products/branded-pens.jpg"},
-  {name:"Mugs",category:"Promotional",price:"From UGX 18,000",image:"assets/images/products/mugs.jpg"},
-  {name:"T-Shirts & Apparel",category:"Promotional",price:"From UGX 25,000",image:"assets/images/products/tshirts-apparel.jpg"},
-  {name:"Pull-Up Banners",category:"Branding",price:"From UGX 180,000",image:"assets/images/products/pullup-banners.jpg"},
-  {name:"Vinyl Banners & Signage",category:"Branding",price:"Request Quote",image:"assets/images/products/vinyl-banners-signage.jpg"},
-  {name:"Vehicle Branding",category:"Branding",price:"Request Quote",image:"assets/images/products/vehicle-branding.jpg"},
-  {name:"Event Backdrops",category:"Branding",price:"Request Quote",image:"assets/images/products/event-backdrops.jpg"},
-  {name:"Branded Umbrellas",category:"Promotional",price:"Request Quote",image:"assets/images/products/branded-umbrellas.jpg"},
-  {name:"Corporate Gifts",category:"Promotional",price:"Request Quote",image:"assets/images/products/corporate-gifts.jpg"},
-  {name:"Packaging & Labels",category:"Packaging",price:"Request Quote",image:"assets/images/products/packaging-labels.jpg"},
-  {name:"Stamps & Office Supplies",category:"Stationery",price:"Request Quote",image:"assets/images/products/stamps-office-supplies.jpg"},
-  {name:"Large Format Printing",category:"Printing",price:"Request Quote",image:"assets/images/products/large-format-printing.jpg"}
+  {id:"business-cards",name:"Business cards",category:"Printing",price:"Quote on request",description:"Professional cards with your choice of stock and finish.",image:"assets/images/products/business-cards.jpg",badge:"Print essential"},
+  {id:"flyers-brochures",name:"Flyers & brochures",category:"Printing",price:"Quote on request",description:"Promote services, products, campaigns and events.",image:"assets/images/products/flyers-brochures.jpg",badge:"Popular"},
+  {id:"large-format-printing",name:"Large-format printing",category:"Printing",price:"Quote on request",description:"Large visual prints for indoor and outdoor use.",image:"assets/images/products/large-format-printing.jpg",badge:"Big impact"},
+  {id:"pullup-banners",name:"Pull-up banners",category:"Branding",price:"Quote on request",description:"Portable display systems for events and promotions.",image:"assets/images/products/pullup-banners.jpg",badge:"Event favourite"},
+  {id:"vinyl-banners-signage",name:"Vinyl banners & signage",category:"Branding",price:"Quote on request",description:"Custom banners, signs and branded display graphics.",image:"assets/images/products/vinyl-banners-signage.jpg",badge:"Custom made"},
+  {id:"event-backdrops",name:"Event backdrops",category:"Branding",price:"Quote on request",description:"Branded backgrounds for conferences, launches and events.",image:"assets/images/products/event-backdrops.jpg",badge:"For events"},
+  {id:"vehicle-branding",name:"Vehicle branding",category:"Branding",price:"Quote on request",description:"Turn company vehicles into moving brand visibility.",image:"assets/images/products/vehicle-branding.jpg",badge:"On the move"},
+  {id:"branded-pens",name:"Branded pens",category:"Promotional",price:"Quote on request",description:"Useful promotional items for teams, clients and events.",image:"assets/images/products/branded-pens.jpg",badge:"Everyday brand"},
+  {id:"mugs",name:"Branded mugs",category:"Promotional",price:"Quote on request",description:"Custom mugs for corporate gifts and campaigns.",image:"assets/images/products/mugs.jpg",badge:"Gift idea"},
+  {id:"tshirts-apparel",name:"T-shirts & apparel",category:"Promotional",price:"Quote on request",description:"Branded wear for staff, teams, events and merchandise.",image:"assets/images/products/tshirts-apparel.jpg",badge:"Wear your brand"},
+  {id:"branded-umbrellas",name:"Branded umbrellas",category:"Promotional",price:"Quote on request",description:"Practical branded merchandise for all-weather visibility.",image:"assets/images/products/branded-umbrellas.jpg",badge:"Useful gifts"},
+  {id:"corporate-gifts",name:"Corporate gifts",category:"Promotional",price:"Quote on request",description:"Thoughtful gift sets and promotional merchandise.",image:"assets/images/products/corporate-gifts.jpg",badge:"Gift collections"},
+  {id:"notebooks-diaries",name:"Notebooks & diaries",category:"Stationery",price:"Quote on request",description:"Branded notebooks, diaries and writing materials.",image:"assets/images/products/notebooks-diaries.jpg",badge:"Office favourite"},
+  {id:"stamps-office-supplies",name:"Stamps & office supplies",category:"Stationery",price:"Quote on request",description:"Everyday stationery and office essentials for organisations.",image:"assets/images/products/stamps-office-supplies.jpg",badge:"Work essentials"},
+  {id:"packaging-labels",name:"Packaging & labels",category:"Packaging",price:"Quote on request",description:"Labels, stickers and packaging to present your product.",image:"assets/images/products/packaging-labels.jpg",badge:"Product ready"},
+  {id:"general-supplies",name:"General supplies",category:"General Supplies",price:"Quote on request",description:"Tell us what your organisation needs, branded or not.",image:"assets/images/products/corporate-gifts.jpg",badge:"Source to order"}
 ];
+let activeCategory = "All";
+let basket = [];
+const $ = id => document.getElementById(id);
 
-let cart=[];
-
-function renderProducts(list=products){
-  const grid=document.getElementById("productGrid");
-  if(!list.length){grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:30px">No products found. Try another search or request a custom quote.</p>';return}
-  grid.innerHTML=list.map((p,i)=>`
-    <article class="product">
-      <div class="product-img"><img src="${p.image}" alt="${p.name}" loading="lazy"></div>
-      <div class="product-body">
-        <div class="product-category">${p.category}</div>
-        <h3>${p.name}</h3>
-        <div class="product-price">${p.price} <small>• customisable</small></div>
-        <div class="product-actions">
-          <button class="btn btn-primary" onclick="addToCart(${products.indexOf(p)})">Add to Cart</button>
-          <button class="btn btn-outline" onclick="openQuote('${p.name}')">Quote</button>
-        </div>
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+}
+function renderProducts() {
+  const query = ($("searchInput")?.value || "").trim().toLowerCase();
+  const visible = products.filter(p => (activeCategory === "All" || p.category === activeCategory) &&
+    (p.name + " " + p.category + " " + p.description).toLowerCase().includes(query));
+  $("productGrid").innerHTML = visible.length ? visible.map(p => `
+    <article class="product-card">
+      <div class="product-photo"><img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy"><span class="product-badge">${escapeHtml(p.badge)}</span></div>
+      <div class="product-info"><span class="product-category">${escapeHtml(p.category)}</span><h3>${escapeHtml(p.name)}</h3>
+        <p class="product-description">${escapeHtml(p.description)}</p>
+        <div class="product-bottom"><span class="product-price">${escapeHtml(p.price)}<small>Custom quantities & specifications</small></span><button class="add-product" data-add="${p.id}">+ Add to basket</button></div>
       </div>
-    </article>`).join("");
+    </article>`).join("") : '<div class="catalog-empty">No matching products found. Try another search or request a custom quotation.</div>';
 }
-
-function filterProducts(){
-  const q=document.getElementById("searchInput").value.toLowerCase().trim();
-  renderProducts(products.filter(p=>(p.name+" "+p.category).toLowerCase().includes(q)));
+function setCategory(category) {
+  activeCategory = category;
+  document.querySelectorAll(".filter-chip").forEach(button => button.classList.toggle("active", button.dataset.category === category));
+  renderProducts();
 }
-function showCategory(category){
-  document.getElementById("searchInput").value=category;
-  filterProducts();
-  document.getElementById("shop").scrollIntoView({behavior:"smooth"});
+function openQuote(product = "") {
+  $("quoteModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+  if (product) {
+    const select = $("qProduct");
+    const option = [...select.options].find(o => o.text.toLowerCase() === product.toLowerCase() || o.value.toLowerCase() === product.toLowerCase());
+    select.value = option ? option.value : (product.length < 100 ? product : "General enquiry");
+    if (!option && product !== "General enquiry") select.value = "General enquiry";
+    $("qDetails").value = product === "General enquiry" ? "" : `Product/service: ${product}\n\nPlease provide a quotation for this request.`;
+  }
+  $("formFeedback").textContent = "";
+  setTimeout(() => $("qName").focus(), 80);
 }
-function addToCart(index){
-  const p=products[index];
-  const found=cart.find(x=>x.name===p.name);
-  if(found) found.qty++;
-  else cart.push({...p,qty:1});
-  updateCart();
+function closeQuote() {
+  $("quoteModal").classList.remove("open");
+  document.body.style.overflow = "";
 }
-function updateCart(){
-  document.getElementById("cartCount").textContent=cart.reduce((s,p)=>s+p.qty,0);
-  const el=document.getElementById("cartItems");
-  if(!cart.length){el.innerHTML='<div class="empty">Your cart is empty.<br>Add a product to get started.</div>';document.getElementById("cartTotal").textContent="UGX 0";return}
-  el.innerHTML=cart.map((p,i)=>`<div class="cart-item"><div><strong>${p.name}</strong><small>${p.category} • Qty ${p.qty}</small></div><button class="btn btn-outline" onclick="removeItem(${i})" style="padding:6px 9px">Remove</button></div>`).join("");
-  document.getElementById("cartTotal").textContent="Quotation required";
+function openBasket() {
+  $("basketDrawer").classList.add("open");
+  $("basketBackdrop").classList.add("open");
+  $("basketDrawer").setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
 }
-function removeItem(i){cart.splice(i,1);updateCart()}
-function openCart(){document.getElementById("cartPanel").classList.add("open");document.getElementById("cartOverlay").classList.add("active")}
-function closeCart(){document.getElementById("cartPanel").classList.remove("open");document.getElementById("cartOverlay").classList.remove("active")}
-function checkout(){
-  if(!cart.length){alert("Your cart is empty.");return}
-  const items=cart.map(p=>`${p.name} x${p.qty}`).join(", ");
-  document.getElementById("qDetails").value=`Order enquiry: ${items}\n\nPlease provide your best quotation.`;
-  closeCart();openQuote();
+function closeBasket() {
+  $("basketDrawer").classList.remove("open");
+  $("basketBackdrop").classList.remove("open");
+  $("basketDrawer").setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
 }
-function openQuote(product=""){
-  document.getElementById("quoteModal").classList.add("active");
-  if(product)document.getElementById("qProduct").value=product;
+function addToBasket(id) {
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+  const existing = basket.find(item => item.id === id);
+  if (existing) existing.quantity += 1;
+  else basket.push({...product, quantity:1});
+  renderBasket();
 }
-function closeQuote(){document.getElementById("quoteModal").classList.remove("active")}
-function submitQuote(e){
-  e.preventDefault();
-  const name=document.getElementById("qName").value;
-  const phone=document.getElementById("qPhone").value;
-  const product=document.getElementById("qProduct").value;
-  const details=document.getElementById("qDetails").value;
-  const message=`Hello Branova Concepts. I would like a quotation.%0A%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0AProduct: ${encodeURIComponent(product)}%0ADetails: ${encodeURIComponent(details)}`;
-  /* The first Branova WhatsApp number is used for quote requests. */
-  window.open(`https://wa.me/256752357618?text=${message}`,"_blank");
-  closeQuote();
+function changeQuantity(id, amount) {
+  const item = basket.find(p => p.id === id);
+  if (!item) return;
+  item.quantity += amount;
+  if (item.quantity <= 0) basket = basket.filter(p => p.id !== id);
+  renderBasket();
 }
-function toggleMobile(){alert("For the production version, this button can open a full mobile navigation menu.")}
-
-function startProductRails(){
-  document.querySelectorAll('.product-rail').forEach((rail,railIndex)=>{
-    const cards=[...rail.querySelectorAll('.rail-card')];
-    const dots=[...rail.querySelectorAll('.rail-dot')];
-    let i=0;
-    setInterval(()=>{
-      cards[i].classList.remove('active'); dots[i].classList.remove('active');
-      i=(i+1)%cards.length;
-      cards[i].classList.add('active'); dots[i].classList.add('active');
-    }, 3200 + railIndex*500);
-  });
+function removeFromBasket(id) {
+  basket = basket.filter(p => p.id !== id);
+  renderBasket();
 }
-startProductRails();
-
-renderProducts();updateCart();
+function renderBasket() {
+  $("cartCount").textContent = basket.reduce((sum, item) => sum + item.quantity, 0);
+  $("basketItems").innerHTML = basket.length ? basket.map(item => `
+    <div class="basket-item"><div><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.category)} · Quotation required</small></div>
+      <div class="qty-controls"><button aria-label="Decrease ${escapeHtml(item.name)} quantity" data-qty="-1" data-id="${item.id}">−</button><span>${item.quantity}</span><button aria-label="Increase ${escapeHtml(item.name)} quantity" data-qty="1" data-id="${item.id}">+</button></div>
+      <button class="basket-remove" data-remove="${item.id}">Remove</button>
+    </div>`).join("") : '<p class="basket-empty">Your basket is empty.<br>Add products to request a combined quotation.</p>';
+}
+function basketToQuote() {
+  if (!basket.length) {
+    $("basketItems").innerHTML = '<p class="basket-empty">Add at least one product first.</p>';
+    return;
+  }
+  const details = basket.map(item => `• ${item.name}, quantity: ${item.quantity}`).join("\n");
+  closeBasket();
+  openQuote("General enquiry");
+  $("qDetails").value = `Please quote for the following items:\n${details}\n\nPlease advise on available specifications, branding options, pricing and delivery.`;
+}
+function enquiryPayload() {
+  const form = $("quoteForm");
+  const data = new FormData(form);
+  const name = String(data.get("name") || "").trim();
+  const phone = String(data.get("phone") || "").trim();
+  const email = String(data.get("email") || "").trim();
+  const product = String(data.get("product") || "General enquiry").trim();
+  const quantity = String(data.get("quantity") || "").trim();
+  const deadline = String(data.get("deadline") || "").trim();
+  const details = String(data.get("message") || "").trim();
+  const parts = [`Product/service: ${product}`, quantity ? `Quantity: ${quantity}` : "", deadline ? `Required by: ${deadline}` : "", details].filter(Boolean);
+  return {name, phone, email, product, message:parts.join("\n")};
+}
+function whatsappUrl(payload) {
+  const message = [
+    "Hello Branova Concepts, I would like a quotation.",
+    "",
+    `Name: ${payload.name}`,
+    `Phone: ${payload.phone}`,
+    payload.email ? `Email: ${payload.email}` : "",
+    payload.message
+  ].filter(Boolean).join("\n");
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+function sendWhatsApp() {
+  const form = $("quoteForm");
+  if (!form.reportValidity()) return;
+  const payload = enquiryPayload();
+  window.open(whatsappUrl(payload), "_blank", "noopener,noreferrer");
+}
+async function submitEnquiry(event) {
+  event.preventDefault();
+  if (!event.currentTarget.reportValidity()) return;
+  const payload = enquiryPayload();
+  const submitButton = $("submitQuote");
+  const feedback = $("formFeedback");
+  submitButton.disabled = true;
+  submitButton.textContent = "Sending…";
+  feedback.textContent = "";
+  if (API_BASE_URL) {
+    try {
+      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/enquiries`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({name:payload.name,phone:payload.phone,email:payload.email,message:payload.message})
+      });
+      if (!response.ok) throw new Error("The enquiry could not be saved.");
+      feedback.textContent = "Your enquiry was received. Thank you, Branova will follow up.";
+      $("quoteForm").reset();
+      basket = [];
+      renderBasket();
+    } catch (error) {
+      feedback.textContent = "The online service is unavailable right now. WhatsApp is ready as an alternative.";
+      window.open(whatsappUrl(payload), "_blank", "noopener,noreferrer");
+    }
+  } else {
+    window.open(whatsappUrl(payload), "_blank", "noopener,noreferrer");
+    feedback.textContent = "WhatsApp opened with your enquiry. Please send the prepared message to complete your request.";
+  }
+  submitButton.disabled = false;
+  submitButton.innerHTML = 'Send enquiry <span>↗</span>';
+}
+function toggleMenu() {
+  const open = $("mainNav").classList.toggle("open");
+  $("menuToggle").setAttribute("aria-expanded", String(open));
+  $("menuToggle").setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+  $("menuToggle").textContent = open ? "×" : "☰";
+}
+document.addEventListener("click", event => {
+  const add = event.target.closest("[data-add]");
+  if (add) addToBasket(add.dataset.add);
+  const qty = event.target.closest("[data-qty]");
+  if (qty) changeQuantity(qty.dataset.id, Number(qty.dataset.qty));
+  const remove = event.target.closest("[data-remove]");
+  if (remove) removeFromBasket(remove.dataset.remove);
+  const quote = event.target.closest("[data-quote]");
+  if (quote) { event.preventDefault(); openQuote(quote.dataset.quote); }
+  const service = event.target.closest("[data-service]");
+  if (service) { event.preventDefault(); setCategory(service.dataset.service); $("catalog").scrollIntoView({behavior:"smooth"}); }
+  const filter = event.target.closest("[data-category]");
+  if (filter) setCategory(filter.dataset.category);
+  if (event.target.closest("#mainNav a")) {
+    $("mainNav").classList.remove("open");
+    $("menuToggle").setAttribute("aria-expanded","false");
+    $("menuToggle").textContent = "☰";
+  }
+});
+$("searchInput").addEventListener("input", renderProducts);
+$("menuToggle").addEventListener("click", toggleMenu);
+$("cartOpen").addEventListener("click", openBasket);
+$("basketClose").addEventListener("click", closeBasket);
+$("basketBackdrop").addEventListener("click", closeBasket);
+$("basketQuote").addEventListener("click", basketToQuote);
+$("basketClear").addEventListener("click", () => { basket = []; renderBasket(); });
+$("quoteClose").addEventListener("click", closeQuote);
+$("quoteModal").addEventListener("click", event => { if (event.target === $("quoteModal")) closeQuote(); });
+$("quoteForm").addEventListener("submit", submitEnquiry);
+$("sendWhatsApp").addEventListener("click", sendWhatsApp);
+document.addEventListener("keydown", event => { if (event.key === "Escape") { closeQuote(); closeBasket(); } });
+renderProducts();
+renderBasket();
