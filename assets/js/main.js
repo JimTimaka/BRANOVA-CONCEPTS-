@@ -10,6 +10,10 @@ const products = [
   {id:"pullup-banners",name:"Pull-up banners",category:"Branding",price:"From UGX 180,000",description:"Portable display systems for events and promotions.",image:"assets/images/products/pullup-banners.jpg",badge:"Event favourite"},
   {id:"vinyl-banners-signage",name:"Vinyl banners & signage",category:"Branding",price:"From UGX 25,000",description:"Custom banners, signs and branded display graphics.",image:"assets/images/products/vinyl-banners-signage.jpg",badge:"Custom made"},
   {id:"event-backdrops",name:"Event backdrops",category:"Branding",price:"From UGX 250,000",description:"Branded backgrounds for conferences, launches and events.",image:"assets/images/products/event-backdrops.jpg",badge:"For events"},
+  {id:"printed-tablecloths",name:"Custom printed tablecloths",category:"Branding",price:"Quote on request",description:"Branded tablecloths for exhibitions, receptions and promotional events. Choose dimensions, fabric, full-colour artwork and coverage.",image:"assets/images/products/event-backdrops.jpg",badge:"Event tables"},
+  {id:"fitted-table-covers",name:"Fitted table covers",category:"Branding",price:"Quote on request",description:"Tailored branded covers for event and display tables. Specify table measurements, corner fit, fabric and logo placement.",image:"assets/images/products/event-backdrops.jpg",badge:"Custom fit"},
+  {id:"stretch-table-covers",name:"Stretch table covers",category:"Branding",price:"Quote on request",description:"Close-fitting stretch covers for professional exhibition tables. Request size, colour, branding and leg or foot style.",image:"assets/images/products/event-backdrops.jpg",badge:"Exhibition ready"},
+  {id:"table-runners",name:"Branded table runners",category:"Branding",price:"Quote on request",description:"Custom logo table runners for conferences, pop-ups and presentation tables. Choose width, length, material and print placement.",image:"assets/images/products/event-backdrops.jpg",badge:"Event essential"},
   {id:"vehicle-branding",name:"Vehicle branding",category:"Branding",price:"From UGX 150,000",description:"Turn company vehicles into moving brand visibility.",image:"assets/images/products/vehicle-branding.jpg",badge:"On the move"},
   {id:"branded-pens",name:"Branded pens",category:"Promotional",price:"From UGX 2,500",description:"Useful promotional items for teams, clients and events.",image:"assets/images/products/branded-pens.jpg",badge:"Everyday brand"},
   {id:"mugs",name:"Branded mugs",category:"Promotional",price:"From UGX 18,000",description:"Custom mugs for corporate gifts and campaigns.",image:"assets/images/products/mugs.jpg",badge:"Gift idea"},
@@ -40,11 +44,22 @@ const productDetails = {
   "notebooks-diaries":"Branded notebooks, diaries and journals for meetings, gifts and office use. Specify size, cover, page count, binding and logo finish.",
   "stamps-office-supplies":"Office stationery and custom stamps for everyday operations. Share required items, specifications, quantities and any branding needs.",
   "packaging-labels":"Custom product labels, stickers and packaging for retail and promotions. Specify sizes, material, adhesive, print finish and quantity.",
+  "printed-tablecloths":"Custom printed tablecloths help brand exhibition stands, conference desks, sales booths and receptions. Share your table dimensions, preferred fabric, print coverage, artwork and quantity. Loose and draped styles can be requested.",
+  "fitted-table-covers":"Fitted table covers are tailored to table dimensions for a clean branded appearance at trade shows and events. Specify table length, width and height, open or closed back, fabric, logo location and quantity.",
+  "stretch-table-covers":"Stretch table covers provide a fitted look for promotional tables and exhibition stands. Specify table size, colour, printed panels, foot style, artwork and order quantity.",
+  "table-runners":"Branded table runners are a flexible way to add your logo to event tables. Specify runner width and length, print area, fabric, edge finish and quantity.",
   "general-supplies":"Business and institutional supplies sourced to specification. Tell us the items, technical requirements, quantities and preferred delivery date."
 };
 products.forEach(p => { p.description = productDetails[p.id] || p.description; p.images = [p.image]; });
 let currentProduct = null;
 let currentImageIndex = 0;
+const eventTableOptions = {
+  "printed-tablecloths":["Loose / draped","Full print","Front logo only","Custom"],
+  "fitted-table-covers":["Fitted closed back","Fitted open back","Custom"],
+  "stretch-table-covers":["Stretch fitted","Stretch with foot pockets","Custom"],
+  "table-runners":["Standard runner","Full-colour runner","Custom"]
+};
+const eventTableIds = Object.keys(eventTableOptions);
 const detailStyles = document.createElement("style");
 detailStyles.textContent = `
 .product-image-open{display:block;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:pointer}.product-image-open img{width:100%;height:100%;object-fit:cover}.product-view-link{background:none;border:0;padding:10px 0;color:#176b5b;font-size:11px;font-weight:800;text-align:left;cursor:pointer}.product-view-link:hover{text-decoration:underline}
@@ -64,7 +79,7 @@ function openProductDetails(id) {
   currentProduct = p;
   currentImageIndex = 0;
   const images = (p.images && p.images.length ? p.images : [p.image]);
-  detailOverlay.innerHTML = `<div class="product-detail-panel"><button class="product-detail-close" type="button" data-detail-close aria-label="Close product details">×</button><div class="product-detail-layout"><div><img class="product-detail-main-image" id="detailMainImage" src="${escapeHtml(images[0])}" alt="${escapeHtml(p.name)}"><div class="product-detail-thumbs">${images.map((src,i)=>`<button type="button" data-detail-image="${i}" class="${i===0?'selected':''}" aria-label="View image ${i+1}"><img src="${escapeHtml(src)}" alt="${escapeHtml(p.name)} image ${i+1}"></button>`).join("")}</div><p class="product-detail-hint">More product views will appear here as they become available.</p></div><div class="product-detail-info"><small>${escapeHtml(p.category)}</small><h2>${escapeHtml(p.name)}</h2><p>${escapeHtml(p.description)}</p><p class="product-detail-price">${escapeHtml(p.price)}</p><p class="product-detail-hint">Indicative price only. Final cost and availability are confirmed by quotation.</p><form id="detailOrderForm"><label>Quantity required<input id="detailQuantity" type="number" min="1" step="1" value="1" required></label><label>Order urgency<select id="detailUrgency"><option value="Standard (3–7 days requested)">Standard — 3–7 days (requested)</option><option value="Express (subject to confirmation)">Express — priority request</option><option value="Flexible / discuss timing">Flexible / discuss timing</option></select></label><label>Preferred delivery date (optional)<input id="detailDate" type="date"></label><label>Customisation / specifications<textarea id="detailSpecs" maxlength="1000" placeholder="Colour, size, logo placement, material, delivery location…"></textarea></label><p class="product-detail-hint">Production and delivery times depend on product, quantity and artwork approval. Express service is not guaranteed until confirmed.</p><div class="product-detail-actions"><button type="submit">Request quotation on WhatsApp ↗</button><button type="button" class="secondary" id="detailAddBasket">Add quantity to basket</button></div></form></div></div></div>`;
+  detailOverlay.innerHTML = `<div class="product-detail-panel"><button class="product-detail-close" type="button" data-detail-close aria-label="Close product details">×</button><div class="product-detail-layout"><div><img class="product-detail-main-image" id="detailMainImage" src="${escapeHtml(images[0])}" alt="${escapeHtml(p.name)}"><div class="product-detail-thumbs">${images.map((src,i)=>`<button type="button" data-detail-image="${i}" class="${i===0?'selected':''}" aria-label="View image ${i+1}"><img src="${escapeHtml(src)}" alt="${escapeHtml(p.name)} image ${i+1}"></button>`).join("")}</div><p class="product-detail-hint">Additional views will appear when BRANOVA product photographs are uploaded. Event-table images are temporary category illustrations.</p></div><div class="product-detail-info"><small>${escapeHtml(p.category)}</small><h2>${escapeHtml(p.name)}</h2><p>${escapeHtml(p.description)}</p><p class="product-detail-price">${escapeHtml(p.price)}</p><p class="product-detail-hint">Indicative price only. Final cost and availability are confirmed by quotation.</p><form id="detailOrderForm"> ${eventTableIds.includes(p.id) ? `<label>Cover style<select id="detailStyle">${eventTableOptions[p.id].map(v=>`<option>${escapeHtml(v)}</option>`).join("")}</select></label><label>Table dimensions (length × width × height)<input id="detailDimensions" maxlength="100" placeholder="e.g. 180 × 75 × 75 cm"></label><label>Print coverage<select id="detailPrint"><option>Front logo</option><option>Full-colour all-over</option><option>Front and sides</option><option>Discuss options</option></select></label><label>Fabric / colour preference<input id="detailFabric" maxlength="120" placeholder="e.g. polyester, forest green"></label>` : ""}<label>Quantity required<input id="detailQuantity" type="number" min="1" step="1" value="1" required></label><label>Order urgency<select id="detailUrgency"><option value="Standard (3–7 days requested)">Standard — 3–7 days (requested)</option><option value="Express (subject to confirmation)">Express — priority request</option><option value="Flexible / discuss timing">Flexible / discuss timing</option></select></label><label>Preferred delivery date (optional)<input id="detailDate" type="date"></label><label>Customisation / specifications<textarea id="detailSpecs" maxlength="1000" placeholder="Colour, size, logo placement, material, delivery location…"></textarea></label><p class="product-detail-hint">Production and delivery times depend on product, quantity and artwork approval. Express service is not guaranteed until confirmed.</p><div class="product-detail-actions"><button type="submit">Request quotation on WhatsApp ↗</button><button type="button" class="secondary" id="detailAddBasket">Add quantity to basket</button></div></form></div></div></div>`;
   detailOverlay.classList.add("open");
   document.body.style.overflow = "hidden";
   detailOverlay.querySelector("[data-detail-close]").focus();
@@ -80,7 +95,13 @@ function productOrderDetails() {
   const urgency = document.getElementById("detailUrgency").value;
   const date = document.getElementById("detailDate").value;
   const specs = document.getElementById("detailSpecs").value.trim();
-  return {quantity,urgency,date,specs};
+  const tableDetails = eventTableIds.includes(currentProduct?.id) ? [
+    "Style: " + document.getElementById("detailStyle").value,
+    "Table dimensions: " + (document.getElementById("detailDimensions").value.trim() || "To confirm"),
+    "Print coverage: " + document.getElementById("detailPrint").value,
+    "Fabric / colour: " + (document.getElementById("detailFabric").value.trim() || "To confirm")
+  ].join("; ") : "";
+  return {quantity,urgency,date,specs:[tableDetails,specs].filter(Boolean).join("; ")};
 }
 detailOverlay.addEventListener("click",event=>{
   if(event.target===detailOverlay || event.target.closest("[data-detail-close]")) {closeProductDetails();return;}
